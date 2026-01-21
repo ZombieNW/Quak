@@ -1,6 +1,6 @@
 export default {
   number: /\d+/,
-  paren: /[()]/g,
+  paren: /[()]/,
   letter: /[a-z]/i,
   whitespace: /\s/,
   quote: /\"/,
