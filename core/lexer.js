@@ -72,7 +72,7 @@ export function lexer(input) {
       continue;
     }
 
-    throw new Error(`Unexpected character: ${char}`);
+    throw new Error(`Unexpected character: ${char} at position ${current}`);
   }
 
   return tokens;
