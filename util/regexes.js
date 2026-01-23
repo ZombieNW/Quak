@@ -4,8 +4,5 @@ export default {
 	letter: /[a-z]/i,
 	whitespace: /\s/,
 	quote: /\"/,
-	newline: /\n/,
-	tab: /\t/,
 	comma: /,/,
-	semicolon: /;/,
 };
