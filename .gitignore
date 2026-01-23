@@ -1,5 +1,6 @@
 # Quak Source Code
 *.qk
+!/examples/*qk
 
 # Logs
 logs
