@@ -1,7 +1,9 @@
 import { readFileSync } from 'fs';
 import { lexer } from './core/lexer.js';
 import { parser } from './core/parser.js';
-import { generator } from './core/generator.js';
+import { evaluate } from './core/evaluator.js';
+
+import stdlibjs from './util/stdlibjs.js';
 
 function main() {
 	let fileName = process.argv[2];
@@ -18,8 +20,7 @@ function main() {
 		return console.log(JSON.stringify(ast, null, 2));
 	}
 
-	let output = generator(newAst);
-	console.log(output);
+	let output = evaluate(ast, stdlibjs);
 }
 
 main();
