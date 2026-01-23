@@ -1,4 +1,5 @@
 import REGEXES from '../util/regexes.js';
+import KEYWORDS from '../util/keywords.js';
 
 export function lexer(input) {
 	let current = 0;
@@ -49,6 +50,12 @@ export function lexer(input) {
 			while (REGEXES.letter.test(char)) {
 				value += char;
 				char = input[++current];
+			}
+
+			// Check if it's a keyword
+			if (KEYWORDS[value]) {
+				tokens.push({ type: 'keyword', value: KEYWORDS[value] });
+				continue;
 			}
 
 			tokens.push({ type: 'identifier', value });
