@@ -19,11 +19,6 @@ function main() {
 		return console.log(JSON.stringify(ast, null, 2));
 	}
 
-	let newAst = transformer(ast);
-	if (flags.includes('--newAst')) {
-		return console.log(JSON.stringify(newAst, null, 2));
-	}
-
 	let output = generator(newAst);
 	console.log(output);
 }
