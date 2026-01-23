@@ -19,6 +19,7 @@ export function lexer(input) {
 		if (REGEXES.number.test(char)) {
 			let value = '';
 
+			// Iterate through numbers
 			while (REGEXES.number.test(char)) {
 				value += char;
 				char = input[++current];
@@ -30,12 +31,13 @@ export function lexer(input) {
 		if (REGEXES.quote.test(char)) {
 			let value = '';
 
-			char = input[++current]; // Skip Opening Quote
+			// Skip quotes and iterate through string
+			char = input[++current];
 			while (!REGEXES.quote.test(char)) {
 				value += char;
 				char = input[++current];
 			}
-			char = input[++current]; // Skip Closing Quote
+			char = input[++current];
 
 			tokens.push({ type: 'string', value });
 			continue;
@@ -43,6 +45,7 @@ export function lexer(input) {
 		if (REGEXES.letter.test(char)) {
 			let value = '';
 
+			// Iterate through identifier
 			while (REGEXES.letter.test(char)) {
 				value += char;
 				char = input[++current];

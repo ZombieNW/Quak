@@ -37,11 +37,15 @@ export function parser(tokens) {
 			let node = parseExpression();
 			token = tokens[current];
 
+			// Expect the closing parenthesis
 			if (token.type === 'paren' && token.value === ')') {
 				return node;
 			}
+
+			throw new TypeError('Expected token: )');
 		}
 
+		// Throw an error for any unexpected tokens
 		throw new TypeError('Unexpected token: ' + JSON.stringify(token));
 	}
 
@@ -62,6 +66,7 @@ export function parser(tokens) {
 			}
 		}
 
+		// Expect the closing parenthesis
 		if (tokens[current].type !== 'paren' || tokens[current].value !== ')') {
 			throw new TypeError('Expected token: )');
 		}
@@ -78,7 +83,6 @@ export function parser(tokens) {
 
 	function parseExpression() {
 		let node = parsePrimary();
-		if (node) console.log(node);
 
 		while (
 			tokens[current] &&
