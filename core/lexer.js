@@ -58,7 +58,7 @@ export function lexer(input) {
 				continue;
 			}
 
-			tokens.push({ type: 'identifier', value });
+			tokens.push({ type: 'identifier', name: value });
 			continue;
 		}
 		if (REGEXES.comma.test(char)) {

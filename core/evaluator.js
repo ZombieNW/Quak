@@ -8,7 +8,9 @@ export function evaluate(ast, env) {
 		case 'StringLiteral':
 			return ast.value;
 		case 'Identifier':
-			return env[ast.value];
+			return env[ast.name];
+		case 'VariableDeclaration':
+			return (env[ast.name] = evaluate(ast.value, env));
 		case 'CallExpression':
 			// Evaluate the callee
 			let callee = evaluate(ast.callee, env);

@@ -13,12 +13,16 @@ export function parser(tokens) {
 			};
 		}
 
+		if (token.type === 'keyword' && token.value === 'variable') {
+			return parseVariable();
+		}
+
 		if (token.type === 'identifier') {
 			current++;
 
 			return {
 				type: 'Identifier',
-				value: token.value,
+				name: token.name,
 			};
 		}
 
@@ -47,6 +51,33 @@ export function parser(tokens) {
 
 		// Throw an error for any unexpected tokens
 		throw new TypeError('Unexpected token: ' + JSON.stringify(token));
+	}
+
+	function parseVariable() {
+		current++;
+
+		// Expect an identifier
+		if (tokens[current].type !== 'identifier') {
+			throw new TypeError('Expected token: identifier');
+		}
+		const identifier = tokens[current];
+
+		current++;
+
+		// Expect an equals
+		if (tokens[current].type !== 'equals') {
+			throw new TypeError('Expected token: =');
+		}
+
+		// Skip the equals and get the value
+		current++;
+		const value = parseExpression();
+
+		return {
+			type: 'VariableDeclaration',
+			name: identifier.name,
+			value: value,
+		};
 	}
 
 	function parseCallExpression(callee) {
