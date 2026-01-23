@@ -5,4 +5,5 @@ export default {
 	whitespace: /\s/,
 	quote: /\"/,
 	comma: /,/,
+	equals: /=/,
 };

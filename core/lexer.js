@@ -59,18 +59,8 @@ export function lexer(input) {
 			current++;
 			continue;
 		}
-		if (REGEXES.newline.test(char)) {
-			tokens.push({ type: 'newline', value: char });
-			current++;
-			continue;
-		}
-		if (REGEXES.tab.test(char)) {
-			tokens.push({ type: 'tab', value: char });
-			current++;
-			continue;
-		}
-		if (REGEXES.semicolon.test(char)) {
-			tokens.push({ type: 'semicolon', value: char });
+		if (REGEXES.equals.test(char)) {
+			tokens.push({ type: 'equals', value: char });
 			current++;
 			continue;
 		}
