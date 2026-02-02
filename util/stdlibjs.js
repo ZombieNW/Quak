@@ -1,3 +1,5 @@
+import { createInterface } from 'node:readline/promises';
+
 export default {
 	log: (...args) => {
 		console.log(...args);
@@ -22,5 +24,12 @@ export default {
 	},
 	divide: (...args) => {
 		return args.reduce((a, b) => a / b);
+	},
+	prompt: async (...args) => {
+		const rl = createInterface({
+			input: process.stdin,
+			output: process.stdout,
+		});
+		return await rl.question(args[0]);
 	},
 };
