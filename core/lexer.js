@@ -1,5 +1,6 @@
 import REGEXES from '../util/regexes.js';
 import KEYWORDS from '../util/keywords.js';
+import regexes from '../util/regexes.js';
 
 export function lexer(input) {
 	let current = 0;
@@ -14,6 +15,11 @@ export function lexer(input) {
 		}
 		if (REGEXES.paren.test(char)) {
 			tokens.push({ type: 'paren', value: char });
+			current++;
+			continue;
+		}
+		if (REGEXES.curly.test(char)) {
+			tokens.push({ type: 'curly', value: char });
 			current++;
 			continue;
 		}
@@ -68,6 +74,46 @@ export function lexer(input) {
 		}
 		if (REGEXES.equals.test(char)) {
 			tokens.push({ type: 'equals', value: char });
+			current++;
+			continue;
+		}
+		if (REGEXES.plus.test(char)) {
+			tokens.push({ type: 'plus', value: char });
+			current++;
+			continue;
+		}
+		if (REGEXES.minus.test(char)) {
+			tokens.push({ type: 'minus', value: char });
+			current++;
+			continue;
+		}
+		if (REGEXES.multiply.test(char)) {
+			tokens.push({ type: 'multiply', value: char });
+			current++;
+			continue;
+		}
+		if (REGEXES.divide.test(char)) {
+			tokens.push({ type: 'divide', value: char });
+			current++;
+			continue;
+		}
+		if (REGEXES.exponent.test(char)) {
+			tokens.push({ type: 'exponent', value: char });
+			current++;
+			continue;
+		}
+		if (REGEXES.ampersand.test(char)) {
+			tokens.push({ type: 'ampersand', value: char });
+			current++;
+			continue;
+		}
+		if (REGEXES.colon.test(char)) {
+			tokens.push({ type: 'colon', value: char });
+			current++;
+			continue;
+		}
+		if (REGEXES.dot.test(char)) {
+			tokens.push({ type: 'dot', value: char });
 			current++;
 			continue;
 		}

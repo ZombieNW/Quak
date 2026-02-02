@@ -1,7 +1,7 @@
 import { createInterface } from 'node:readline/promises';
 
 export default {
-	log: (...args) => {
+	print: (...args) => {
 		console.log(...args);
 		return null;
 	},
