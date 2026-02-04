@@ -1,128 +1,166 @@
 export function parser(tokens) {
 	let current = 0;
 
+	// Helper to look at next token
+	const peek = () => tokens[current];
+
+	// Helper to consume a token
+	const advance = () => tokens[current++];
+
+	// Helper to detect end
+	const isAtEnd = () => current >= tokens.length;
+
+	// Helper to validate a token
+	const consume = (type, value, message) => {
+		const token = peek();
+		if (!token || token.type !== type || (value && token.value !== value)) {
+			throw new TypeError(
+				message || `Expected ${type} but got ${token?.type}`
+			);
+		}
+		return advance();
+	};
+
 	function parsePrimary() {
-		let token = tokens[current];
+		const token = peek();
 
 		if (token.type === 'number') {
-			current++;
-
+			advance();
 			return {
 				type: 'NumberLiteral',
 				value: token.value,
 			};
 		}
 
-		if (token.type === 'keyword' && token.value === 'variable') {
-			return parseVariable();
-		}
-
-		if (token.type === 'identifier') {
-			current++;
-
-			return {
-				type: 'Identifier',
-				name: token.name,
-			};
-		}
-
 		if (token.type === 'string') {
-			current++;
-
+			advance();
 			return {
 				type: 'StringLiteral',
 				value: token.value,
 			};
 		}
 
+		if (token.type === 'identifier') {
+			advance();
+			return {
+				type: 'Identifier',
+				name: token.name,
+			};
+		}
+
 		if (token.type === 'paren' && token.value === '(') {
-			current++;
+			advance(); // skip '('
 
-			let node = parseExpression();
-			token = tokens[current];
+			const node = parseExpression();
 
-			// Expect the closing parenthesis
-			if (token.type === 'paren' && token.value === ')') {
-				return node;
-			}
-
-			throw new TypeError('Expected token: )');
+			consume('paren', ')');
+			return node;
 		}
 
-		// Throw an error for any unexpected tokens
-		throw new TypeError('Unexpected token: ' + JSON.stringify(token));
-	}
-
-	function parseVariable() {
-		current++;
-
-		// Expect an identifier
-		if (tokens[current].type !== 'identifier') {
-			throw new TypeError('Expected token: identifier');
-		}
-		const identifier = tokens[current];
-
-		current++;
-
-		// Expect an equals
-		if (tokens[current].type !== 'equals') {
-			throw new TypeError('Expected token: =');
-		}
-
-		// Skip the equals and get the value
-		current++;
-		const value = parseExpression();
-
-		return {
-			type: 'VariableDeclaration',
-			name: identifier.name,
-			value: value,
-		};
-	}
-
-	function parseCallExpression(callee) {
-		let args = [];
-
-		// Skip the opening parenthesis
-		current++;
-
-		// Parse arguments if call is not immediately closed
-		if (tokens[current].type !== 'paren' && tokens[current].value !== ')') {
-			// Eats an expression, and checks if there's another
-			args.push(parseExpression());
-
-			while (tokens[current].type === 'comma') {
-				current++;
-				args.push(parseExpression());
-			}
-		}
-
-		// Expect the closing parenthesis
-		if (tokens[current].type !== 'paren' || tokens[current].value !== ')') {
-			throw new TypeError('Expected token: )');
-		}
-
-		// Skip the closing parenthesis
-		current++;
-
-		return {
-			type: 'CallExpression',
-			callee: callee,
-			arguments: args,
-		};
+		throw new TypeError(`Unexpected token: ${JSON.stringify(token)}`);
 	}
 
 	function parseExpression() {
 		let node = parsePrimary();
 
-		while (
-			tokens[current] &&
-			tokens[current].type === 'paren' &&
-			tokens[current].value === '('
-		) {
+		// Call expressions like func(arg, arg)
+		while (peek() && peek().type === 'paren' && peek().value === '(') {
 			node = parseCallExpression(node);
 		}
 
+		return node;
+	}
+
+	function parseCallExpression(callee) {
+		consume('paren', '(');
+
+		let args = [];
+		if (peek() && !(peek().type === 'paren' && peek().value === ')')) {
+			args.push(parseExpression());
+			while (peek() && peek().type === 'comma') {
+				advance(); // skip ','
+				args.push(parseExpression());
+			}
+		}
+
+		consume('paren', ')');
+
+		return {
+			type: 'CallExpression',
+			callee,
+			arguments: args,
+		};
+	}
+
+	function parseBlock() {
+		consume('curly', '{');
+
+		let body = [];
+		while (peek() && !(peek().type === 'curly' && peek().value === '}')) {
+			body.push(parseExpression());
+		}
+
+		consume('curly', '}');
+
+		return {
+			type: 'BlockStatement',
+			body,
+		};
+	}
+
+	function parseVariable() {
+		advance(); // consume 'variable'
+
+		const identifier = consume('identifier');
+		consume('equals');
+		const value = parseExpression();
+
+		return {
+			type: 'VariableDeclaration',
+			name: identifier.name,
+			value,
+		};
+	}
+
+	function parseStatement() {
+		const token = peek();
+
+		if (token.type === 'keyword') {
+			if (token.value === 'if') return parseIfStatement();
+			if (token.value === 'variable') return parseVariable();
+		}
+		return parseExpression();
+	}
+
+	function parseIfStatement() {
+		advance(); // consume 'if'
+
+		// Condition
+		consume('paren', '(');
+		const condition = parseExpression();
+		consume('paren', ')');
+
+		// Body
+		const body = parseBlock();
+
+		let node = {
+			type: 'IfStatement',
+			condition,
+			body,
+			alternate: null,
+		};
+
+		if (peek()?.value === 'else') {
+			advance(); // consume 'else'
+
+			if (peek()?.value === 'if') {
+				// else if
+				node.alternate = parseIfStatement();
+			} else {
+				// else
+				node.alternate = parseBlock();
+			}
+		}
 		return node;
 	}
 
@@ -131,8 +169,8 @@ export function parser(tokens) {
 		body: [],
 	};
 
-	while (current < tokens.length) {
-		ast.body.push(parseExpression());
+	while (!isAtEnd()) {
+		ast.body.push(parseStatement());
 	}
 
 	return ast;

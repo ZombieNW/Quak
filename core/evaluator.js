@@ -13,6 +13,19 @@ export async function evaluate(ast, env) {
 			return env[ast.name];
 		case 'VariableDeclaration':
 			return (env[ast.name] = await evaluate(ast.value, env));
+		case 'IfStatement':
+			if (await evaluate(ast.condition, env)) {
+				return await evaluate(ast.body, env);
+			} else if (ast.alternate) {
+				return await evaluate(ast.alternate, env);
+			}
+			return null;
+		case 'BlockStatement':
+			let result = null;
+			for (const statement of ast.body) {
+				result = await evaluate(statement, env);
+			}
+			return result;
 		case 'CallExpression':
 			// Evaluate the callee
 			const callee = await evaluate(ast.callee, env);
