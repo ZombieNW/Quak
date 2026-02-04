@@ -5,7 +5,6 @@ export async function evaluate(ast, env) {
 			for (const statement of ast.body) {
 				await evaluate(statement, env);
 			}
-			process.exit(0);
 		case 'NumberLiteral':
 		case 'StringLiteral':
 			return ast.value;
@@ -18,6 +17,11 @@ export async function evaluate(ast, env) {
 				return await evaluate(ast.body, env);
 			} else if (ast.alternate) {
 				return await evaluate(ast.alternate, env);
+			}
+			return null;
+		case 'WhileStatement':
+			while (await evaluate(ast.condition, env)) {
+				await evaluate(ast.body, env);
 			}
 			return null;
 		case 'BlockStatement':

@@ -21,6 +21,34 @@ export function parser(tokens) {
 		return advance();
 	};
 
+	function parseStatement() {
+		const token = peek();
+
+		if (token.type === 'keyword') {
+			if (token.value === 'if') return parseIfStatement();
+			if (token.value === 'variable') return parseVariable();
+			if (token.value === 'while') return parseWhileStatement();
+		}
+		return parseExpression();
+	}
+
+	function parseWhileStatement() {
+		consume('keyword', 'while');
+
+		// Condition
+		consume('paren', '(');
+		const condition = parseExpression();
+		consume('paren', ')');
+
+		const body = parseBlock();
+
+		return {
+			type: 'WhileStatement',
+			condition,
+			body,
+		};
+	}
+
 	function parsePrimary() {
 		const token = peek();
 
@@ -57,7 +85,9 @@ export function parser(tokens) {
 			return node;
 		}
 
-		throw new TypeError(`Unexpected token: ${JSON.stringify(token)}`);
+		throw new TypeError(
+			`Unexpected token: ${JSON.stringify(token)} at ${current}`
+		);
 	}
 
 	function parseExpression() {
@@ -97,7 +127,7 @@ export function parser(tokens) {
 
 		let body = [];
 		while (peek() && !(peek().type === 'curly' && peek().value === '}')) {
-			body.push(parseExpression());
+			body.push(parseStatement());
 		}
 
 		consume('curly', '}');
@@ -120,16 +150,6 @@ export function parser(tokens) {
 			name: identifier.name,
 			value,
 		};
-	}
-
-	function parseStatement() {
-		const token = peek();
-
-		if (token.type === 'keyword') {
-			if (token.value === 'if') return parseIfStatement();
-			if (token.value === 'variable') return parseVariable();
-		}
-		return parseExpression();
 	}
 
 	function parseIfStatement() {

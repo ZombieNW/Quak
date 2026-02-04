@@ -5,7 +5,7 @@ import { evaluate } from './core/evaluator.js';
 
 import stdlibjs from './util/stdlibjs.js';
 
-function main() {
+async function main() {
 	let fileName = process.argv[2];
 	let flags = process.argv.slice(3);
 	let input = readFileSync(fileName, 'utf-8');
@@ -20,7 +20,11 @@ function main() {
 		return console.log(JSON.stringify(ast, null, 2));
 	}
 
-	let output = evaluate(ast, stdlibjs);
+	try {
+		await evaluate(ast, stdlibjs); // Use await here
+	} catch (err) {
+		console.error('Runtime Error:', err.message);
+	}
 }
 
 main();
