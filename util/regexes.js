@@ -3,6 +3,7 @@ export default {
 	paren: /[()]/,
 	curly: /[{}]/,
 	letter: /[a-z_]/i,
+	bool: /(true|false)/i,
 	whitespace: /\s/,
 	quote: /\"/,
 	comma: /,/,

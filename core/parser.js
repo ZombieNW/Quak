@@ -76,6 +76,14 @@ export function parser(tokens) {
 			};
 		}
 
+		if (token.type === 'boolean') {
+			advance();
+			return {
+				type: 'BooleanLiteral',
+				value: token.value,
+			};
+		}
+
 		if (token.type === 'paren' && token.value === '(') {
 			advance(); // skip '('
 

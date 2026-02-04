@@ -8,6 +8,8 @@ export async function evaluate(ast, env) {
 		case 'NumberLiteral':
 		case 'StringLiteral':
 			return ast.value;
+		case 'BooleanLiteral':
+			return ast.value;
 		case 'Identifier':
 			return env[ast.name];
 		case 'VariableDeclaration':

@@ -58,6 +58,11 @@ export function lexer(input) {
 				char = input[++current];
 			}
 
+			// Boolean Literals
+			if (REGEXES.bool.test(value)) {
+				tokens.push({ type: 'boolean', value: value === 'true' });
+			}
+
 			// Check if it's a keyword
 			if (KEYWORDS[value]) {
 				tokens.push({ type: 'keyword', value: KEYWORDS[value] });
