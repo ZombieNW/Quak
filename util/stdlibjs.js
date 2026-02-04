@@ -25,11 +25,16 @@ export default {
 	divide: (...args) => {
 		return args.reduce((a, b) => a / b);
 	},
+	equals: (...args) => {
+		return args.reduce((a, b) => a === b);
+	},
 	prompt: async (...args) => {
 		const rl = createInterface({
 			input: process.stdin,
 			output: process.stdout,
 		});
-		return await rl.question(args[0]);
+		const answer = await rl.question(args[0]);
+		rl.close();
+		return answer.trim();
 	},
 };
