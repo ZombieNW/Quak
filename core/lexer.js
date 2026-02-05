@@ -61,6 +61,7 @@ export function lexer(input) {
 			// Boolean Literals
 			if (REGEXES.bool.test(value)) {
 				tokens.push({ type: 'boolean', value: value === 'true' });
+				continue;
 			}
 
 			// Check if it's a keyword
